@@ -12,6 +12,8 @@ public class WEEEE extends Canvas implements Runnable {
     private int playerVX, playerVY;
     private int speed;
 
+    private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown;
+
     private Thread thread;
 
     int fps = 60;
@@ -38,6 +40,10 @@ public class WEEEE extends Canvas implements Runnable {
         playerVX = 0;
         playerVY = 0;
         speed = 1;
+        isGoingRight = false;
+        isGoingLeft = false;
+        isGoingDown = false;
+        isGoingUp = false;
     }
 
     public void update() {
@@ -72,7 +78,6 @@ public class WEEEE extends Canvas implements Runnable {
         g.fillRect(0,0,width,height);
 
         drawPlayer(g, playerX, playerY);
-        System.out.println(playerVY);
 
         g.dispose();
         bs.show();
@@ -129,23 +134,28 @@ public class WEEEE extends Canvas implements Runnable {
         @Override
         public void keyPressed(KeyEvent keyEvent) {
             if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
-                speed = 2;
+                speed = 3;
                 //System.out.println("WEee");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
+                playerVY = -3;
 
-                playerVY = -4;
+                isGoingUp = true;
             }
             if (keyEvent.getKeyChar() == 's' || keyEvent.getKeyChar() == 'S') {
-                playerVY = 4;
+                playerVY = 3;
 
+                isGoingDown = true;
             }
             if (keyEvent.getKeyChar() == 'a' || keyEvent.getKeyChar() == 'A') {
-                playerVX = -4;
+                playerVX = -3;
 
+                isGoingLeft = true;
             }
             if (keyEvent.getKeyChar() == 'd' || keyEvent.getKeyChar() == 'D') {
-                playerVX = 4;
+                playerVX = 3;
+
+                isGoingRight = true;
             }
 
 
@@ -158,16 +168,32 @@ public class WEEEE extends Canvas implements Runnable {
                 //System.out.println("WOoo");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
-                playerVY = 0;
+                if (!isGoingDown) {
+                    playerVY = 0;
+                }
+
+                isGoingUp = false;
             }
             if (keyEvent.getKeyChar() == 's' || keyEvent.getKeyChar() == 'S') {
-                playerVY = 0;
+                if (!isGoingUp) {
+                    playerVY = 0;
+                }
+
+                isGoingDown = false;
             }
             if (keyEvent.getKeyChar() == 'a' || keyEvent.getKeyChar() == 'A') {
-                playerVX = 0;
+                if (!isGoingRight) {
+                    playerVX = 0;
+                }
+
+                isGoingLeft = false;
             }
             if (keyEvent.getKeyChar() == 'd' || keyEvent.getKeyChar() == 'D') {
-                playerVX = 0;
+                if (!isGoingLeft) {
+                    playerVX = 0;
+                }
+
+                isGoingRight = false;
             }
         }
     }
