@@ -1,16 +1,29 @@
+import org.w3c.dom.css.Rect;
+
+import javax.naming.spi.DirObjectFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
     private int width = 400;
     private int height = 600;
 
+    private int numShots = 0;
+
+    private boolean isShot = false;
+    private boolean isShooting = false;
+
+    private int planeX, planeY, planeVX;
+
     private int playerX, playerY;
     private int playerVX, playerVY;
     private int speed;
+
+    public ArrayList<laser> pewpew = new ArrayList<laser>();
 
     private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown;
 
@@ -44,6 +57,11 @@ public class WEEEE extends Canvas implements Runnable {
         isGoingLeft = false;
         isGoingDown = false;
         isGoingUp = false;
+
+        planeX = 0;
+        planeY = 50;
+        planeVX = 2;
+
     }
 
     public void update() {
@@ -63,6 +81,19 @@ public class WEEEE extends Canvas implements Runnable {
             playerY = height - 15;
         }
 
+        planeX += planeVX;
+        if (planeX > width - 15) {
+            planeVX = -2;
+        } else if(planeX < 0) {
+            planeVX = 2;
+        }
+
+
+        if (isShooting) {
+            pewpew.get(0).shoot();
+        }
+
+        System.out.println(numShots);
     }
 
     public void draw() {
@@ -79,8 +110,43 @@ public class WEEEE extends Canvas implements Runnable {
 
         drawPlayer(g, playerX, playerY);
 
+        drawPlane(g, planeX, planeY);
+
+        g.setColor(Color.BLUE);
+
+        shootingMahLaser(g);
+
+        try {
+            System.out.println(pewpew);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         g.dispose();
         bs.show();
+    }
+
+    private void shootingMahLaser(Graphics g) {
+        if (isShooting) {
+            g.setColor(Color.black);
+            g.fillRect(pewpew.get(0).getPosX(), pewpew.get(0).getPosY(),5,10);
+            pewpew.get(0).shoot();
+        }
+        if (isShooting) {
+            for (int i = 0; i < numShots; i++) {
+                g.setColor(Color.black);
+                g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
+                pewpew.get(i).shoot();
+            }
+        }
+
+    }
+
+    public void drawPlane(Graphics g, int x, int y) {
+        g.setColor(Color.black);
+        g.fillRect(x,y,15,5);
+        g.fillRect(x+5,y,5,10);
     }
 
     private void drawPlayer(Graphics g, int x, int y) {
@@ -157,7 +223,16 @@ public class WEEEE extends Canvas implements Runnable {
 
                 isGoingRight = true;
             }
+            if (keyEvent.getKeyChar() == ' ') {
+                System.out.println("pew");
+                isShot = true;
 
+                numShots++;
+
+                pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));
+
+                isShooting = true;
+            }
 
         }
 
