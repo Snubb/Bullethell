@@ -9,6 +9,11 @@ public class WEEEE extends Canvas implements Runnable {
     private Rectangle enemy;
     private int numHits = 0;
 
+    private int powerUps = 3;
+    private int powerUpTimer = 0;
+
+    private int coolDownAlt = 3;
+
     private int coolDown = 0; //Functions as a cooldown between shots.
     private int clearTimer = 0;
 
@@ -31,7 +36,7 @@ public class WEEEE extends Canvas implements Runnable {
 
     private Thread thread;
 
-    int fps = 60;
+    int fps = 120;
 
     private  boolean isRunning;
 
@@ -68,11 +73,29 @@ public class WEEEE extends Canvas implements Runnable {
 
     public void update() { //Various updates that happen every frame
 
+        if (coolDown > 10) {
+            coolDown = 0;
+        }
+
+        System.out.println(coolDownAlt);
+        System.out.println(powerUpTimer);
+        System.out.println(coolDown);
+
+        if (powerUpTimer > 0) {
+            coolDownAlt = 1;
+        } else coolDownAlt = 3;
+
+        if (powerUpTimer > -1) {
+            powerUpTimer--;
+        }
+
         for (int i = 0;i < numShots; i++) {
             if (pewpew.get(i).collide(enemy)) {
                 numHits++;
+                pewpew.remove(i);
+                numShots--;
 
-                System.out.println(numHits);
+                //System.out.println(numHits);
             }
         }
 
@@ -93,8 +116,6 @@ public class WEEEE extends Canvas implements Runnable {
         positionCheck();
     }
 
-
-
     public void draw() { //Draws various things every frame
         bs = getBufferStrategy();
         if (bs == null) {
@@ -103,7 +124,6 @@ public class WEEEE extends Canvas implements Runnable {
         }
         Graphics g = bs.getDrawGraphics();
 
-        update();
         g.setColor(Color.white);
         g.fillRect(0,0,width,height);
 
@@ -145,7 +165,7 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     private void spawnLaser() {
-        if (coolDown == 3) {
+        if (coolDown == coolDownAlt) {
             numShots += 2;
             //Spawns in different positions depending on if you are focusing or not
             if (focus == 1) {
@@ -176,12 +196,6 @@ public class WEEEE extends Canvas implements Runnable {
             pewpew.get(i).shoot();
         }
 
-    }
-
-    public void drawPlane(Graphics g, int x, int y) {
-        g.setColor(Color.black);
-        g.fillRect(x,y,15,5);
-        g.fillRect(x+5,y,5,10);
     }
 
     private void drawPlayer(Graphics g, int x, int y) {
@@ -235,7 +249,12 @@ public class WEEEE extends Canvas implements Runnable {
     private class KL implements KeyListener {
         @Override
         public void keyTyped(KeyEvent keyEvent) {
-
+            if (keyEvent.getKeyChar() == 'e' || keyEvent.getKeyChar() == 'E') {
+                if (powerUps > 0) {
+                    powerUps--;
+                    powerUpTimer = 300;
+                }
+            }
         }
 
         @Override
