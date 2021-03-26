@@ -6,5 +6,4 @@ public class Enemy_test {
     public Enemy_test(Rectangle hitBox) {
         this.hitBox = hitBox;
     }
-
 }

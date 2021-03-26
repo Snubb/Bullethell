@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
-    private Rectangle enemy;
+    private final Rectangle enemy;
     private int numHits = 0;
 
     private int powerUps = 3;
@@ -17,8 +17,8 @@ public class WEEEE extends Canvas implements Runnable {
     private int coolDown = 0; //Functions as a cooldown between shots.
     private int clearTimer = 0;
 
-    private int width = 400; //Dimensions for window
-    private int height = 600;
+    private final int width = 400; //Dimensions for window
+    private final int height = 600;
 
     private int numShots = 0; //Keeps track of the total number of shots fired
 
@@ -30,8 +30,9 @@ public class WEEEE extends Canvas implements Runnable {
     private int playerVX, playerVY;
     private int focus; //Allows you to focus by pressing shift
 
-    public ArrayList<laser> pewpew = new ArrayList<laser>(); //Array to keep spawning bullets
+    public ArrayList<laser> pewpew = new ArrayList<>(); //Array to keep spawning bullets
 
+    //OBS: Det här gjordes innan du nämnde saken om update() inuti draw(), kan vara så att det inte behövs men vågar inte ändra på det för mycket.
     private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown; //Necessary to make sure the player doesn't freeze up when changing directions
 
     private Thread thread;
@@ -45,7 +46,7 @@ public class WEEEE extends Canvas implements Runnable {
 
     public WEEEE() {
 
-        JFrame frame = new JFrame("Title goes here");
+        JFrame frame = new JFrame("Not touhou I swear");
         this.setSize(width,height);
         frame.add(this);
         frame.pack();
@@ -77,10 +78,6 @@ public class WEEEE extends Canvas implements Runnable {
             coolDown = 0;
         }
 
-        System.out.println(coolDownAlt);
-        System.out.println(powerUpTimer);
-        System.out.println(coolDown);
-
         if (powerUpTimer > 0) {
             coolDownAlt = 1;
         } else coolDownAlt = 3;
@@ -94,8 +91,6 @@ public class WEEEE extends Canvas implements Runnable {
                 numHits++;
                 pewpew.remove(i);
                 numShots--;
-
-                //System.out.println(numHits);
             }
         }
 
