@@ -184,18 +184,12 @@ public class WEEEE extends Canvas implements Runnable {
         numShots = 0;
     }
 
-    private void shootingMahLaser(Graphics g) { //Moves the lasers forward by changing y-cordinate, does NOT spawn laser
-        for (int i = 0; i < numShots; i += 2) {
+    private void shootingMahLaser(Graphics g) { //Moves the lasers forward by changing y-cordinate, does not spawn laser but does draw it
+        for (int i = 0; i < numShots; i++) {
             g.setColor(Color.GREEN);
             g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
             pewpew.get(i).shoot();
         }
-        for (int i = 1; i < numShots; i += 2) {
-            g.setColor(Color.BLUE);
-            g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
-            pewpew.get(i).shoot();
-        }
-
     }
 
     private void drawPlayer(Graphics g, int x, int y) {
