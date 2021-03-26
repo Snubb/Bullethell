@@ -8,6 +8,8 @@ public class WEEEE extends Canvas implements Runnable {
 
     private int coolDown = 0;
 
+    private int clearTimer = 0;
+
     private int width = 400;
     private int height = 600;
 
@@ -66,6 +68,10 @@ public class WEEEE extends Canvas implements Runnable {
 
     public void update() {
 
+        if (clearTimer == 60) {
+            clearNumShots();
+        }
+
         if (isFiring) {
             if (coolDown == 3) {
                 numShots += 2;
@@ -105,6 +111,11 @@ public class WEEEE extends Canvas implements Runnable {
 
     }
 
+    private void clearNumShots() {
+        pewpew.clear();
+        numShots = 0;
+    }
+
     public void draw() {
         bs = getBufferStrategy();
         if (bs == null) {
@@ -124,7 +135,7 @@ public class WEEEE extends Canvas implements Runnable {
 
         g.setColor(Color.BLUE);
 
-        System.out.println(coolDown);
+        System.out.println(numShots);
 
         g.dispose();
         bs.show();
@@ -189,6 +200,10 @@ public class WEEEE extends Canvas implements Runnable {
                 draw();
                 if (isFiring) {
                     coolDown++;
+                    clearTimer = 0;
+                }
+                if (!isFiring) {
+                    clearTimer++;
                 }
                 lastTime = now;
             }
