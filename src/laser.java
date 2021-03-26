@@ -37,4 +37,7 @@ public class laser {
 
         return Hitbox.y -= 10;
     }
+    public boolean collide(Rectangle a) {
+        return Hitbox.intersects(a);
+    }
 }

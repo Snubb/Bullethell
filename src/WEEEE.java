@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
+    private Rectangle enemy;
+    private int numHits = 0;
+
     private int coolDown = 0; //Functions as a cooldown between shots.
     private int clearTimer = 0;
 
@@ -16,7 +19,7 @@ public class WEEEE extends Canvas implements Runnable {
 
     private boolean isFiring = false; //True if you are shooting.
 
-    private int planeX, planeY, planeVX; //Positioning and speed of enemy
+    private int enemyVX; //Positioning and speed of enemy
 
     private int playerX, playerY; //Positioning and speed of player
     private int playerVX, playerVY;
@@ -57,13 +60,21 @@ public class WEEEE extends Canvas implements Runnable {
         isGoingDown = false;
         isGoingUp = false;
 
-        planeX = 0;
-        planeY = 50;
-        planeVX = 2;
+        enemyVX = 2;
+
+        enemy = new Rectangle(0,50,50,20);
 
     }
 
     public void update() { //Various updates that happen every frame
+
+        for (int i = 0;i < numShots; i++) {
+            if (pewpew.get(i).collide(enemy)) {
+                numHits++;
+
+                System.out.println(numHits);
+            }
+        }
 
         if (clearTimer == 60) {
             clearNumShots();
@@ -99,7 +110,12 @@ public class WEEEE extends Canvas implements Runnable {
         shootingMahLaser(g);
 
         drawPlayer(g, playerX, playerY);
-        drawPlane(g, planeX, planeY);
+
+        if (numHits < 1000) {
+            g.setColor(Color.BLACK);
+            g.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        }
+
 
         g.dispose();
         bs.show();
@@ -120,11 +136,11 @@ public class WEEEE extends Canvas implements Runnable {
         }
 
         //Moves the enemy
-        planeX += planeVX;
-        if (planeX > width - 15) {
-            planeVX = -2;
-        } else if(planeX < 0) {
-            planeVX = 2;
+        enemy.x += enemyVX;
+        if (enemy.x > width - 50) {
+            enemyVX = -2;
+        } else if(enemy.x < 0) {
+            enemyVX = 2;
         }
     }
 
