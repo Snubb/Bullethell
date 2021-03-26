@@ -6,28 +6,25 @@ import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
-    private int coolDown = 0;
-
+    private int coolDown = 0; //Functions as a cooldown between shots.
     private int clearTimer = 0;
 
-    private int width = 400;
+    private int width = 400; //Dimensions for window
     private int height = 600;
 
-    private int numShots = 0;
+    private int numShots = 0; //Keeps track of the total number of shots fired
 
-    private boolean isShooting = false;
+    private boolean isFiring = false; //True if you are shooting.
 
-    private boolean isFiring = false;
+    private int planeX, planeY, planeVX; //Positioning and speed of enemy
 
-    private int planeX, planeY, planeVX;
-
-    private int playerX, playerY;
+    private int playerX, playerY; //Positioning and speed of player
     private int playerVX, playerVY;
-    private int focus;
+    private int focus; //Allows you to focus by pressing shift
 
-    public ArrayList<laser> pewpew = new ArrayList<laser>();
+    public ArrayList<laser> pewpew = new ArrayList<laser>(); //Array to keep spawning bullets
 
-    private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown;
+    private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown; //Necessary to make sure the player doesn't freeze up when changing directions
 
     private Thread thread;
 
@@ -66,15 +63,17 @@ public class WEEEE extends Canvas implements Runnable {
 
     }
 
-    public void update() {
+    public void update() { //Various updates that happen every frame
 
         if (clearTimer == 60) {
             clearNumShots();
         }
 
+        //Handles spawning the bullets
         if (isFiring) {
             if (coolDown == 3) {
                 numShots += 2;
+                //Spawns in different positions depending on if you are focusing or not
                 if (focus == 1) {
                     pewpew.add(new laser(new Rectangle (playerX-6, playerY, 5, 20)));
                     pewpew.add(new laser(new Rectangle (playerX+11, playerY, 5, 20)));
@@ -86,9 +85,11 @@ public class WEEEE extends Canvas implements Runnable {
             }
         }
 
+        //Handles movement
         playerX += (playerVX / focus);
         playerY += (playerVY / focus);
 
+        //Keeps the player inside the playingarea
         if (playerX > width - 10) {
             playerX = width - 10;
         }
@@ -102,6 +103,7 @@ public class WEEEE extends Canvas implements Runnable {
             playerY = height - 15;
         }
 
+        //Moves the enemy
         planeX += planeVX;
         if (planeX > width - 15) {
             planeVX = -2;
@@ -111,12 +113,12 @@ public class WEEEE extends Canvas implements Runnable {
 
     }
 
-    private void clearNumShots() {
+    private void clearNumShots() { //Clears the total number of shots if you pause for a second
         pewpew.clear();
         numShots = 0;
     }
 
-    public void draw() {
+    public void draw() { //Draws various things every second
         bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
@@ -127,32 +129,26 @@ public class WEEEE extends Canvas implements Runnable {
         update();
         g.setColor(Color.white);
         g.fillRect(0,0,width,height);
+
         shootingMahLaser(g);
 
         drawPlayer(g, playerX, playerY);
-
         drawPlane(g, planeX, planeY);
-
-        g.setColor(Color.BLUE);
-
-        System.out.println(numShots);
 
         g.dispose();
         bs.show();
     }
 
-    private void shootingMahLaser(Graphics g) {
-        if (isShooting) {
-            for (int i = 0; i < numShots; i += 2) {
-                g.setColor(Color.GREEN);
-                g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
-                pewpew.get(i).shoot();
-            }
-            for (int i = 1; i < numShots; i += 2) {
-                g.setColor(Color.BLUE);
-                g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
-                pewpew.get(i).shoot();
-            }
+    private void shootingMahLaser(Graphics g) { //Moves the lasers forward by changing y-cordinate, does NOT spawn laser
+        for (int i = 0; i < numShots; i += 2) {
+            g.setColor(Color.GREEN);
+            g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
+            pewpew.get(i).shoot();
+        }
+        for (int i = 1; i < numShots; i += 2) {
+            g.setColor(Color.BLUE);
+            g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
+            pewpew.get(i).shoot();
         }
 
     }
@@ -243,9 +239,6 @@ public class WEEEE extends Canvas implements Runnable {
                 isGoingRight = true;
             }
             if (keyEvent.getKeyChar() == 'z' || keyEvent.getKeyChar() == 'Z' || keyEvent.getKeyChar() == ' ') {
-                System.out.println("pew");
-
-                isShooting = true;
                 isFiring = true;
             }
 
