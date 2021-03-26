@@ -116,6 +116,7 @@ public class WEEEE extends Canvas implements Runnable {
         update();
         g.setColor(Color.white);
         g.fillRect(0,0,width,height);
+        shootingMahLaser(g);
 
         drawPlayer(g, playerX, playerY);
 
@@ -123,7 +124,6 @@ public class WEEEE extends Canvas implements Runnable {
 
         g.setColor(Color.BLUE);
 
-        shootingMahLaser(g);
         System.out.println(coolDown);
 
         g.dispose();
@@ -131,29 +131,16 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     private void shootingMahLaser(Graphics g) {
-        /*if (isFiring) {
-            System.out.println(playerX);
-            pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));
-        }*/
-        /*if (isShooting) {
-            g.setColor(Color.black);
-            g.fillRect(pewpew.get(0).getPosX(), pewpew.get(0).getPosY(),5,10);
-            pewpew.get(0).shoot();
-        }*/
         if (isShooting) {
             for (int i = 0; i < numShots; i += 2) {
                 g.setColor(Color.GREEN);
                 g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
                 pewpew.get(i).shoot();
-                /*g.fillRect(pewpew.get(i+1).getPosX(), pewpew.get(i+1).getPosY(), 5, 10);
-                pewpew.get(i+1).shoot();*/
             }
             for (int i = 1; i < numShots; i += 2) {
                 g.setColor(Color.BLUE);
                 g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
                 pewpew.get(i).shoot();
-                /*g.fillRect(pewpew.get(i+1).getPosX(), pewpew.get(i+1).getPosY(), 5, 10);
-                pewpew.get(i+1).shoot();*/
             }
         }
 
@@ -202,13 +189,11 @@ public class WEEEE extends Canvas implements Runnable {
                 draw();
                 if (isFiring) {
                     coolDown++;
-
                 }
                 lastTime = now;
             }
         }
         stop();
-
     }
 
     private class KL implements KeyListener {
@@ -221,7 +206,6 @@ public class WEEEE extends Canvas implements Runnable {
         public void keyPressed(KeyEvent keyEvent) {
             if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
                 focus = 3;
-                //System.out.println("WEee");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
                 playerVY = -3;
@@ -246,9 +230,6 @@ public class WEEEE extends Canvas implements Runnable {
             if (keyEvent.getKeyChar() == 'z' || keyEvent.getKeyChar() == 'Z' || keyEvent.getKeyChar() == ' ') {
                 System.out.println("pew");
 
-                /*numShots++;
-                pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));*/
-
                 isShooting = true;
                 isFiring = true;
             }
@@ -259,7 +240,6 @@ public class WEEEE extends Canvas implements Runnable {
         public void keyReleased(KeyEvent keyEvent) {
             if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
                 focus = 1;
-                //System.out.println("WOoo");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
                 if (!isGoingDown) {
