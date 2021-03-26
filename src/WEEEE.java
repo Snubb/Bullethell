@@ -1,6 +1,3 @@
-import org.w3c.dom.css.Rect;
-
-import javax.naming.spi.DirObjectFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,19 +6,22 @@ import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
+    private int coolDown = 0;
+
     private int width = 400;
     private int height = 600;
 
     private int numShots = 0;
 
-    private boolean isShot = false;
     private boolean isShooting = false;
+
+    private boolean isFiring = false;
 
     private int planeX, planeY, planeVX;
 
     private int playerX, playerY;
     private int playerVX, playerVY;
-    private int speed;
+    private int focus;
 
     public ArrayList<laser> pewpew = new ArrayList<laser>();
 
@@ -52,7 +52,7 @@ public class WEEEE extends Canvas implements Runnable {
         playerY = 400;
         playerVX = 0;
         playerVY = 0;
-        speed = 1;
+        focus = 1;
         isGoingRight = false;
         isGoingLeft = false;
         isGoingDown = false;
@@ -65,8 +65,23 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     public void update() {
-        playerX += (playerVX / speed);
-        playerY += (playerVY / speed);
+
+        if (isFiring) {
+            if (coolDown == 3) {
+                numShots += 2;
+                if (focus == 1) {
+                    pewpew.add(new laser(new Rectangle (playerX-6, playerY, 5, 20)));
+                    pewpew.add(new laser(new Rectangle (playerX+11, playerY, 5, 20)));
+                } else {
+                    pewpew.add(new laser(new Rectangle (playerX, playerY-5, 5, 20)));
+                    pewpew.add(new laser(new Rectangle (playerX+5, playerY-5, 5, 20)));
+                }
+                coolDown = 0;
+            }
+        }
+
+        playerX += (playerVX / focus);
+        playerY += (playerVY / focus);
 
         if (playerX > width - 10) {
             playerX = width - 10;
@@ -88,12 +103,6 @@ public class WEEEE extends Canvas implements Runnable {
             planeVX = 2;
         }
 
-
-        if (isShooting) {
-            pewpew.get(0).shoot();
-        }
-
-        System.out.println(numShots);
     }
 
     public void draw() {
@@ -115,29 +124,36 @@ public class WEEEE extends Canvas implements Runnable {
         g.setColor(Color.BLUE);
 
         shootingMahLaser(g);
-
-        try {
-            System.out.println(pewpew);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        System.out.println(coolDown);
 
         g.dispose();
         bs.show();
     }
 
     private void shootingMahLaser(Graphics g) {
-        if (isShooting) {
+        /*if (isFiring) {
+            System.out.println(playerX);
+            pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));
+        }*/
+        /*if (isShooting) {
             g.setColor(Color.black);
             g.fillRect(pewpew.get(0).getPosX(), pewpew.get(0).getPosY(),5,10);
             pewpew.get(0).shoot();
-        }
+        }*/
         if (isShooting) {
-            for (int i = 0; i < numShots; i++) {
-                g.setColor(Color.black);
+            for (int i = 0; i < numShots; i += 2) {
+                g.setColor(Color.GREEN);
                 g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
                 pewpew.get(i).shoot();
+                /*g.fillRect(pewpew.get(i+1).getPosX(), pewpew.get(i+1).getPosY(), 5, 10);
+                pewpew.get(i+1).shoot();*/
+            }
+            for (int i = 1; i < numShots; i += 2) {
+                g.setColor(Color.BLUE);
+                g.fillRect(pewpew.get(i).getPosX(), pewpew.get(i).getPosY(), 5, 10);
+                pewpew.get(i).shoot();
+                /*g.fillRect(pewpew.get(i+1).getPosX(), pewpew.get(i+1).getPosY(), 5, 10);
+                pewpew.get(i+1).shoot();*/
             }
         }
 
@@ -184,6 +200,10 @@ public class WEEEE extends Canvas implements Runnable {
             if (now-lastTime > deltaT) {
                 update();
                 draw();
+                if (isFiring) {
+                    coolDown++;
+
+                }
                 lastTime = now;
             }
         }
@@ -200,7 +220,7 @@ public class WEEEE extends Canvas implements Runnable {
         @Override
         public void keyPressed(KeyEvent keyEvent) {
             if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
-                speed = 3;
+                focus = 3;
                 //System.out.println("WEee");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
@@ -223,15 +243,14 @@ public class WEEEE extends Canvas implements Runnable {
 
                 isGoingRight = true;
             }
-            if (keyEvent.getKeyChar() == ' ') {
+            if (keyEvent.getKeyChar() == 'z' || keyEvent.getKeyChar() == 'Z' || keyEvent.getKeyChar() == ' ') {
                 System.out.println("pew");
-                isShot = true;
 
-                numShots++;
-
-                pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));
+                /*numShots++;
+                pewpew.add(new laser(new Rectangle (playerX+2, playerY, 5, 20)));*/
 
                 isShooting = true;
+                isFiring = true;
             }
 
         }
@@ -239,7 +258,7 @@ public class WEEEE extends Canvas implements Runnable {
         @Override
         public void keyReleased(KeyEvent keyEvent) {
             if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
-                speed = 1;
+                focus = 1;
                 //System.out.println("WOoo");
             }
             if (keyEvent.getKeyChar() == 'w' || keyEvent.getKeyChar() == 'W') {
@@ -270,6 +289,10 @@ public class WEEEE extends Canvas implements Runnable {
 
                 isGoingRight = false;
             }
+            if (keyEvent.getKeyChar() == 'z' || keyEvent.getKeyChar() == 'Z' || keyEvent.getKeyChar() == ' ') {
+                isFiring = false;
+            }
+
         }
     }
 
