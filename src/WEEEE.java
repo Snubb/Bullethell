@@ -71,25 +71,41 @@ public class WEEEE extends Canvas implements Runnable {
 
         //Handles spawning the bullets
         if (isFiring) {
-            if (coolDown == 3) {
-                numShots += 2;
-                //Spawns in different positions depending on if you are focusing or not
-                if (focus == 1) {
-                    pewpew.add(new laser(new Rectangle (playerX-6, playerY, 5, 20)));
-                    pewpew.add(new laser(new Rectangle (playerX+11, playerY, 5, 20)));
-                } else {
-                    pewpew.add(new laser(new Rectangle (playerX, playerY-5, 5, 20)));
-                    pewpew.add(new laser(new Rectangle (playerX+5, playerY-5, 5, 20)));
-                }
-                coolDown = 0;
-            }
+            spawnLaser();
         }
 
         //Handles movement
         playerX += (playerVX / focus);
         playerY += (playerVY / focus);
 
-        //Keeps the player inside the playingarea
+        //Keeps the player inside the playing-area
+        positionCheck();
+    }
+
+
+
+    public void draw() { //Draws various things every frame
+        bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(3);
+            return;
+        }
+        Graphics g = bs.getDrawGraphics();
+
+        update();
+        g.setColor(Color.white);
+        g.fillRect(0,0,width,height);
+
+        shootingMahLaser(g);
+
+        drawPlayer(g, playerX, playerY);
+        drawPlane(g, planeX, planeY);
+
+        g.dispose();
+        bs.show();
+    }
+
+    private void positionCheck() {
         if (playerX > width - 10) {
             playerX = width - 10;
         }
@@ -110,33 +126,26 @@ public class WEEEE extends Canvas implements Runnable {
         } else if(planeX < 0) {
             planeVX = 2;
         }
+    }
 
+    private void spawnLaser() {
+        if (coolDown == 3) {
+            numShots += 2;
+            //Spawns in different positions depending on if you are focusing or not
+            if (focus == 1) {
+                pewpew.add(new laser(new Rectangle (playerX-6, playerY, 5, 20)));
+                pewpew.add(new laser(new Rectangle (playerX+11, playerY, 5, 20)));
+            } else {
+                pewpew.add(new laser(new Rectangle (playerX, playerY-5, 5, 20)));
+                pewpew.add(new laser(new Rectangle (playerX+5, playerY-5, 5, 20)));
+            }
+            coolDown = 0;
+        }
     }
 
     private void clearNumShots() { //Clears the total number of shots if you pause for a second
         pewpew.clear();
         numShots = 0;
-    }
-
-    public void draw() { //Draws various things every second
-        bs = getBufferStrategy();
-        if (bs == null) {
-            createBufferStrategy(3);
-            return;
-        }
-        Graphics g = bs.getDrawGraphics();
-
-        update();
-        g.setColor(Color.white);
-        g.fillRect(0,0,width,height);
-
-        shootingMahLaser(g);
-
-        drawPlayer(g, playerX, playerY);
-        drawPlane(g, planeX, planeY);
-
-        g.dispose();
-        bs.show();
     }
 
     private void shootingMahLaser(Graphics g) { //Moves the lasers forward by changing y-cordinate, does NOT spawn laser
