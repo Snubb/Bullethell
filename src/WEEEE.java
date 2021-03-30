@@ -1,13 +1,20 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 
 public class WEEEE extends Canvas implements Runnable {
 
+    private BufferedImage luigi;
+
     private final Rectangle enemy;
-    private int numHits = 0;
+    private int enemyHP = 2000;
 
     private int powerUps = 3;
     private int powerUpTimer = 0;
@@ -47,6 +54,12 @@ public class WEEEE extends Canvas implements Runnable {
 
     public WEEEE() {
 
+        try {
+            luigi = ImageIO.read(new File("Lugi.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         JFrame frame = new JFrame("Not touhou I swear");
         this.setSize(width+200,height);
         frame.add(this);
@@ -69,14 +82,14 @@ public class WEEEE extends Canvas implements Runnable {
 
         enemyVX = 2;
 
-        enemy = new Rectangle(0,50,50,20);
+        enemy = new Rectangle(0,50,50,70);
 
     }
 
     public void update() { //Various updates that happen every frame
 
         powerUpRefresh++;
-        if (powerUpRefresh == 15000) {
+        if (powerUpRefresh == 5000) {
             powerUps++;
             powerUpRefresh = 0;
         }
@@ -95,7 +108,7 @@ public class WEEEE extends Canvas implements Runnable {
 
         for (int i = 0;i < numShots; i++) {
             if (pewpew.get(i).collide(enemy)) {
-                numHits++;
+                enemyHP--;
                 pewpew.remove(i);
                 numShots--;
             }
@@ -136,14 +149,18 @@ public class WEEEE extends Canvas implements Runnable {
 
         drawPlayer(g, playerX, playerY);
 
-        if (numHits < 1000) {
-            g.setColor(Color.BLACK);
-            g.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        if (enemyHP > 0) {
+            //g.setColor(Color.BLACK);
+            //g.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            g.drawImage(luigi, enemy.x, enemy.y,enemy.width, enemy.height, null);
+        } else {
+
         }
 
         g.setFont(new Font("Serif", Font.BOLD, 24));
         g.drawString("Boosts(e): " + powerUps, 400, 50);
         g.drawString("Refresh: " + powerUpRefresh, 400, 100);
+        g.drawString("Enemy HP: " + enemyHP, 400, 150);
 
         g.dispose();
         bs.show();
@@ -164,11 +181,16 @@ public class WEEEE extends Canvas implements Runnable {
         }
 
         //Moves the enemy
-        enemy.x += enemyVX;
-        if (enemy.x > width - 50) {
-            enemyVX = -2;
-        } else if(enemy.x < 0) {
-            enemyVX = 2;
+        if (enemyHP > 0) {
+            enemy.x += enemyVX;
+            if (enemy.x > width - 50) {
+                enemyVX = -2;
+            } else if(enemy.x < 0) {
+                enemyVX = 2;
+            }
+        } else {
+            enemy.x = -100;
+            enemy.y = -100;
         }
     }
 
