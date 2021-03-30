@@ -202,11 +202,11 @@ public class WEEEE extends Canvas implements Runnable {
         }
 
         g.setFont(new Font("Serif", Font.BOLD, 24));
-        g.drawString("Boosts(e): " + powerUps, 400, 50);
-        g.drawString("Refresh: " + powerUpRefresh, 400, 100);
-        g.drawString("Enemy HP: " + enemyHP, 400, 150);
-        g.drawString("Lives: " + lives, 400, 200);
-        g.drawString("numBullets: " + numBullets, 400, 250);
+        g.drawString("Boosts(e): " + powerUps, 410, 50);
+        g.drawString("Refresh: " + powerUpRefresh, 410, 100);
+        g.drawString("Enemy HP: " + enemyHP, 410, 150);
+        g.drawString("Lives: " + lives, 410, 200);
+        g.drawString("numBullets: " + numBullets, 410, 250);
 
         g.dispose();
         bs.show();
