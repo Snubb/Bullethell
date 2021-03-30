@@ -16,7 +16,7 @@ public class WEEEE extends Canvas implements Runnable {
     private final Rectangle enemy;
     private int enemyHP = 10000;
     private int fasterShooting = 1;
-    private boolean growingBullets = false;
+    private boolean growingBullets, homingBullets = false;
     private int enemyVX; //Positioning and speed of enemy
 
     public ArrayList<enemyLaser> pewpewButDontTouch = new ArrayList<>(); //Enemys bullets
@@ -82,8 +82,8 @@ public class WEEEE extends Canvas implements Runnable {
 
         player.x = 175;
         player.y = 400;
-        player.width = 10;
-        player.height = 15;
+        player.width = 5;
+        player.height = 5;
 
         /*playerX = 175;
         playerY = 400;*/
@@ -103,8 +103,9 @@ public class WEEEE extends Canvas implements Runnable {
 
     public void update() { //Various updates that happen every frame
 
-        if (enemyHP < 6000) {
-            fasterShooting = 2;
+        if (enemyHP < 4000) {
+            homingBullets = true;
+        }else  if (enemyHP < 6000) {
             growingBullets = true;
         }else if (enemyHP < 8000) {
             fasterShooting = 2;
@@ -172,9 +173,11 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     private void spawnBullet() {
-        System.out.println("YEP");
-        pewpewButDontTouch.add(new enemyLaser(new Rectangle(enemy.x+25, enemy.y+50, 5, 5)));
-        numBullets++;
+        if (enemyHP > 0) {
+            System.out.println("YEP");
+            pewpewButDontTouch.add(new enemyLaser(new Rectangle(enemy.x+25, enemy.y+50, 5, 5)));
+            numBullets++;
+        }
     }
 
     private void moveBullets(Graphics g) {
@@ -184,6 +187,10 @@ public class WEEEE extends Canvas implements Runnable {
             pewpewButDontTouch.get(i).shoot();
             if (growingBullets && enemyBulletCooldown == 60/fasterShooting) {
                 pewpewButDontTouch.get(i).grow();
+                pewpewButDontTouch.get(i).shiftX();
+            }
+            if (homingBullets) {
+                pewpewButDontTouch.get(i).track(player.x, 400);
             }
         }
     }
@@ -308,7 +315,7 @@ public class WEEEE extends Canvas implements Runnable {
         g.setColor(Color.black);
         //g.fillRect(x,y,10,15);
 
-        g.fillRect(player.x, player.y, 10, 15);
+        g.fillRect(player.x, player.y, player.width, player.height);
     }
 
     public static void main(String[] args) {

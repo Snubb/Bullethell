@@ -25,8 +25,21 @@ public class enemyLaser {
     public int grow() {
         return Hitbox.width += 2;
     }
+    public int shiftX() {
+        return Hitbox.x -=1;
+    }
     public int getWidth() {
         return Hitbox.width;
+    }
+    public int track(int x, int y) {
+        if (Hitbox.y < y) {
+            if (Hitbox.x < x) {
+                return Hitbox.x += 1;
+            } else if(Hitbox.x > x) {
+                return Hitbox.x -= 1;
+            }
+        }
+        return Hitbox.x;
     }
     public int getHeight() {
         return Hitbox.height;
