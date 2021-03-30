@@ -34,11 +34,18 @@ public class WEEEE extends Canvas implements Runnable {
 
     private int enemyVX; //Positioning and speed of enemy
 
-    private int playerX, playerY; //Positioning and speed of player
+    private final Rectangle player = new Rectangle();
+    private int lives = 3;
+
+    //private int playerX, playerY; //Positioning and speed of player
     private int playerVX, playerVY;
     private int focus; //Allows you to focus by pressing shift
 
     public ArrayList<laser> pewpew = new ArrayList<>(); //Array to keep spawning bullets
+
+    public ArrayList<enemyLaser> pewpewButDontTouch = new ArrayList<>(); //Enemys bullets
+    private int enemyBulletCooldown = 0; //Cooldown between each bullet
+    private int numBullets = 0;
 
     //OBS: Det här gjordes innan du nämnde saken om update() inuti draw(), kan vara så att det inte behövs men vågar inte ändra på det för mycket.
     private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown; //Necessary to make sure the player doesn't freeze up when changing directions
@@ -70,8 +77,13 @@ public class WEEEE extends Canvas implements Runnable {
 
         isRunning = false;
 
-        playerX = 175;
-        playerY = 400;
+        player.x = 175;
+        player.y = 400;
+        player.width = 5;
+        player.height = 5;
+
+        /*playerX = 175;
+        playerY = 400;*/
         playerVX = 0;
         playerVY = 0;
         focus = 1;
@@ -87,6 +99,12 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     public void update() { //Various updates that happen every frame
+
+        enemyBulletCooldown++;
+        if (enemyBulletCooldown == 60) {
+            spawnBullet();
+            enemyBulletCooldown = 0;
+        }
 
         powerUpRefresh++;
         if (powerUpRefresh == 5000) {
@@ -114,6 +132,15 @@ public class WEEEE extends Canvas implements Runnable {
             }
         }
 
+        for (int i = 0;i < numBullets; i++) {
+            if (pewpewButDontTouch.get(i).collide(player)) {
+                lives--;
+                pewpewButDontTouch.remove(i);
+                numBullets--;
+                System.out.println("HIT");
+            }
+        }
+
         if (clearTimer == 60) {
             clearNumShots();
         }
@@ -124,11 +151,27 @@ public class WEEEE extends Canvas implements Runnable {
         }
 
         //Handles movement
-        playerX += (playerVX / focus);
-        playerY += (playerVY / focus);
+        /*playerX += (playerVX / focus);
+        playerY += (playerVY / focus);*/
+
+        player.x += (playerVX / focus);
+        player.y += (playerVY / focus);
 
         //Keeps the player inside the playing-area
         positionCheck();
+    }
+
+    private void spawnBullet() {
+        pewpewButDontTouch.add(new enemyLaser(new Rectangle(enemy.x+25, enemy.y+50, 5, 5)));
+        numBullets++;
+    }
+
+    private void moveBullets(Graphics g) {
+        for (int i = 0; i < numBullets; i++) {
+            g.setColor(Color.RED);
+            g.fillRect(pewpewButDontTouch.get(i).getPosX(), pewpewButDontTouch.get(i).getPosY(), 10, 10);
+            pewpewButDontTouch.get(i).shoot();
+        }
     }
 
     public void draw() { //Draws various things every frame
@@ -146,8 +189,9 @@ public class WEEEE extends Canvas implements Runnable {
         g.fillRect(0,0,width,height);
 
         shootingMahLaser(g);
+        moveBullets(g);
 
-        drawPlayer(g, playerX, playerY);
+        drawPlayer(g, player.x, player.y);
 
         if (enemyHP > 0) {
             //g.setColor(Color.BLACK);
@@ -161,13 +205,28 @@ public class WEEEE extends Canvas implements Runnable {
         g.drawString("Boosts(e): " + powerUps, 400, 50);
         g.drawString("Refresh: " + powerUpRefresh, 400, 100);
         g.drawString("Enemy HP: " + enemyHP, 400, 150);
+        g.drawString("Lives: " + lives, 400, 200);
+        g.drawString("numBullets: " + numBullets, 400, 250);
 
         g.dispose();
         bs.show();
     }
 
     private void positionCheck() {
-        if (playerX > width - 10) {
+        if (player.x > width - 10) {
+            player.x = width - 10;
+        }
+        if (player.x < 0) {
+            player.x = 0;
+        }
+        if (player.y < 0) {
+            player.y = 0;
+        }
+        if (player.y > height - 15) {
+            player.y = height - 15;
+        }
+
+        /*if (playerX > width - 10) {
             playerX = width - 10;
         }
         if (playerX < 0) {
@@ -178,7 +237,7 @@ public class WEEEE extends Canvas implements Runnable {
         }
         if (playerY > height - 15) {
             playerY = height - 15;
-        }
+        }*/
 
         //Moves the enemy
         if (enemyHP > 0) {
@@ -198,12 +257,19 @@ public class WEEEE extends Canvas implements Runnable {
         if (coolDown == coolDownAlt) {
             numShots += 2;
             //Spawns in different positions depending on if you are focusing or not
-            if (focus == 1) {
+            /*if (focus == 1) {
                 pewpew.add(new laser(new Rectangle (playerX-6, playerY, 5, 20)));
                 pewpew.add(new laser(new Rectangle (playerX+11, playerY, 5, 20)));
             } else {
                 pewpew.add(new laser(new Rectangle (playerX, playerY-5, 5, 20)));
                 pewpew.add(new laser(new Rectangle (playerX+5, playerY-5, 5, 20)));
+            }*/
+            if (focus == 1) {
+                pewpew.add(new laser(new Rectangle (player.x-6, player.y, 5, 20)));
+                pewpew.add(new laser(new Rectangle (player.x+11, player.y, 5, 20)));
+            } else {
+                pewpew.add(new laser(new Rectangle (player.x, player.y-5, 5, 20)));
+                pewpew.add(new laser(new Rectangle (player.x+5, player.y-5, 5, 20)));
             }
             coolDown = 0;
         }
@@ -224,7 +290,9 @@ public class WEEEE extends Canvas implements Runnable {
 
     private void drawPlayer(Graphics g, int x, int y) {
         g.setColor(Color.black);
-        g.fillRect(x,y,10,15);
+        //g.fillRect(x,y,10,15);
+
+        g.fillRect(player.x, player.y, 10, 15);
     }
 
     public static void main(String[] args) {
