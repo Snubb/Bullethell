@@ -11,6 +11,7 @@ public class WEEEE extends Canvas implements Runnable {
 
     private int powerUps = 3;
     private int powerUpTimer = 0;
+    private int powerUpRefresh = 0;
 
     private int coolDownAlt = 3;
 
@@ -74,6 +75,12 @@ public class WEEEE extends Canvas implements Runnable {
 
     public void update() { //Various updates that happen every frame
 
+        powerUpRefresh++;
+        if (powerUpRefresh == 15000) {
+            powerUps++;
+            powerUpRefresh = 0;
+        }
+
         if (coolDown > 10) {
             coolDown = 0;
         }
@@ -134,6 +141,9 @@ public class WEEEE extends Canvas implements Runnable {
             g.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
         }
 
+        g.setFont(new Font("Serif", Font.BOLD, 24));
+        g.drawString("Boosts(e): " + powerUps, 400, 50);
+        g.drawString("Refresh: " + powerUpRefresh, 400, 100);
 
         g.dispose();
         bs.show();
