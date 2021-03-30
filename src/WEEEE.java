@@ -79,8 +79,8 @@ public class WEEEE extends Canvas implements Runnable {
 
         player.x = 175;
         player.y = 400;
-        player.width = 5;
-        player.height = 5;
+        player.width = 10;
+        player.height = 15;
 
         /*playerX = 175;
         playerY = 400;*/
