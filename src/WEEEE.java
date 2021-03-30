@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.beans.FeatureDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.Buffer;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 public class WEEEE extends Canvas implements Runnable {
 
     private BufferedImage luigi;
+    private BufferedImage background;
+    private int backgroundX, backgroundY;
 
     private final Rectangle enemy;
     private int enemyHP = 10000;
@@ -70,6 +73,12 @@ public class WEEEE extends Canvas implements Runnable {
             e.printStackTrace();
         }
 
+        try {
+            background = ImageIO.read(new File("background.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         JFrame frame = new JFrame("Not touhou I swear");
         this.setSize(width+200,height);
         frame.add(this);
@@ -99,9 +108,17 @@ public class WEEEE extends Canvas implements Runnable {
 
         enemy = new Rectangle(0,50,50,70);
 
+        backgroundX = 0;
+        backgroundY = -600;
+
     }
 
     public void update() { //Various updates that happen every frame
+
+        backgroundY++;
+        if (backgroundY == 0) {
+            backgroundY = -600;
+        }
 
         if (enemyHP < 4000) {
             homingBullets = true;
@@ -206,8 +223,11 @@ public class WEEEE extends Canvas implements Runnable {
         g.setColor(new Color(213, 213, 213));
         g.fillRect(width,0,200,height);
 
+
         g.setColor(Color.white);
         g.fillRect(0,0,width,height);
+
+        g.drawImage(background, backgroundX, backgroundY, null);
 
         shootingMahLaser(g);
         moveBullets(g);
