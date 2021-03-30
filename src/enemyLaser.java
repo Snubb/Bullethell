@@ -1,3 +1,5 @@
+import org.w3c.dom.css.Rect;
+
 import java.awt.*;
 
 public class enemyLaser {
@@ -19,5 +21,14 @@ public class enemyLaser {
     }
     public boolean collide(Rectangle a) {
         return Hitbox.intersects(a);
+    }
+    public int grow() {
+        return Hitbox.width += 2;
+    }
+    public int getWidth() {
+        return Hitbox.width;
+    }
+    public int getHeight() {
+        return Hitbox.height;
     }
 }

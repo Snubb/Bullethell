@@ -14,7 +14,14 @@ public class WEEEE extends Canvas implements Runnable {
     private BufferedImage luigi;
 
     private final Rectangle enemy;
-    private int enemyHP = 2000;
+    private int enemyHP = 10000;
+    private int fasterShooting = 1;
+    private boolean growingBullets = false;
+    private int enemyVX; //Positioning and speed of enemy
+
+    public ArrayList<enemyLaser> pewpewButDontTouch = new ArrayList<>(); //Enemys bullets
+    private int enemyBulletCooldown = 0; //Cooldown between each bullet
+    private int numBullets = 0;
 
     private int powerUps = 3;
     private int powerUpTimer = 0;
@@ -25,14 +32,13 @@ public class WEEEE extends Canvas implements Runnable {
     private int coolDown = 0; //Functions as a cooldown between shots.
     private int clearTimer = 0;
 
-    private final int width = 400; //Dimensions for window
+    private final int width = 400; //Dimensions for playing area
     private final int height = 600;
 
     private int numShots = 0; //Keeps track of the total number of shots fired
 
     private boolean isFiring = false; //True if you are shooting.
 
-    private int enemyVX; //Positioning and speed of enemy
 
     private final Rectangle player = new Rectangle();
     private int lives = 3;
@@ -43,9 +49,6 @@ public class WEEEE extends Canvas implements Runnable {
 
     public ArrayList<laser> pewpew = new ArrayList<>(); //Array to keep spawning bullets
 
-    public ArrayList<enemyLaser> pewpewButDontTouch = new ArrayList<>(); //Enemys bullets
-    private int enemyBulletCooldown = 0; //Cooldown between each bullet
-    private int numBullets = 0;
 
     //OBS: Det här gjordes innan du nämnde saken om update() inuti draw(), kan vara så att det inte behövs men vågar inte ändra på det för mycket.
     private boolean isGoingLeft, isGoingRight, isGoingUp, isGoingDown; //Necessary to make sure the player doesn't freeze up when changing directions
@@ -100,8 +103,15 @@ public class WEEEE extends Canvas implements Runnable {
 
     public void update() { //Various updates that happen every frame
 
+        if (enemyHP < 6000) {
+            fasterShooting = 2;
+            growingBullets = true;
+        }else if (enemyHP < 8000) {
+            fasterShooting = 2;
+        }
+
         enemyBulletCooldown++;
-        if (enemyBulletCooldown == 60) {
+        if (enemyBulletCooldown > 60/fasterShooting) {
             spawnBullet();
             enemyBulletCooldown = 0;
         }
@@ -126,7 +136,7 @@ public class WEEEE extends Canvas implements Runnable {
 
         for (int i = 0;i < numShots; i++) {
             if (pewpew.get(i).collide(enemy)) {
-                enemyHP--;
+                enemyHP -= 10;
                 pewpew.remove(i);
                 numShots--;
             }
@@ -162,6 +172,7 @@ public class WEEEE extends Canvas implements Runnable {
     }
 
     private void spawnBullet() {
+        System.out.println("YEP");
         pewpewButDontTouch.add(new enemyLaser(new Rectangle(enemy.x+25, enemy.y+50, 5, 5)));
         numBullets++;
     }
@@ -169,8 +180,11 @@ public class WEEEE extends Canvas implements Runnable {
     private void moveBullets(Graphics g) {
         for (int i = 0; i < numBullets; i++) {
             g.setColor(Color.RED);
-            g.fillRect(pewpewButDontTouch.get(i).getPosX(), pewpewButDontTouch.get(i).getPosY(), 10, 10);
+            g.fillRect(pewpewButDontTouch.get(i).getPosX(), pewpewButDontTouch.get(i).getPosY(), pewpewButDontTouch.get(i).getWidth(), 10);
             pewpewButDontTouch.get(i).shoot();
+            if (growingBullets && enemyBulletCooldown == 60/fasterShooting) {
+                pewpewButDontTouch.get(i).grow();
+            }
         }
     }
 
@@ -207,6 +221,8 @@ public class WEEEE extends Canvas implements Runnable {
         g.drawString("Enemy HP: " + enemyHP, 410, 150);
         g.drawString("Lives: " + lives, 410, 200);
         g.drawString("numBullets: " + numBullets, 410, 250);
+        g.drawString("eBC: " + enemyBulletCooldown, 410, 300);
+        g.drawString("fasterShooting: " + fasterShooting, 410, 350);
 
         g.dispose();
         bs.show();
