@@ -47,7 +47,7 @@ public class WEEEE extends Canvas implements Runnable {
     public WEEEE() {
 
         JFrame frame = new JFrame("Not touhou I swear");
-        this.setSize(width,height);
+        this.setSize(width+200,height);
         frame.add(this);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,6 +118,9 @@ public class WEEEE extends Canvas implements Runnable {
             return;
         }
         Graphics g = bs.getDrawGraphics();
+
+        g.setColor(new Color(213, 213, 213));
+        g.fillRect(width,0,200,height);
 
         g.setColor(Color.white);
         g.fillRect(0,0,width,height);
